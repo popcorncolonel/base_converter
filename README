@@ -7,3 +7,5 @@ Started November 2013
  base n
 -Make this into a web interface!! Will command line work or will it have to be
  parameters?
+-Work on command line interface. Just ./base 10 16 256 (should print 100)
+        -Keep ./base functionality - if argc == 1

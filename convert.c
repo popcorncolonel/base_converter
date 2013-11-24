@@ -19,37 +19,31 @@
  *       online support :)
  */
 
+FILE *output = NULL;
+
 void print_backwards(char *to_print, int len);
 void read_bases(int *to_base, int *from_base);
 int read_int(int base);
 
 int main()
 {
+        output = stdout;
         int to_base, from_base;
         char old_base[MAX];
-        /*
-        char **temp = readline();
-        int i;
-        fprintf(stdout, "strings: \n");
-        for(i = 0; i < 5; i++)
-                fprintf(stdout, "%s\n", temp[i]);
-        free(temp);
-        */
-
         read_bases(&to_base, &from_base);
 
-        fprintf(stdout, "Write a number in base %d to convert to base %d... ",
+        fprintf(output, "Write a number in base %d to convert to base %d... ",
                 from_base, to_base);
 
         int dec = 0;
         while (fscanf(stdin, "%s", old_base) == 1 && 
-               strcmp(old_base, "quit") != 0) /* cannot use 'quit' it is a valid num */
+               strcmp(old_base, "quit") != 0) /* 'quit' is valid in base 57 */
         {
                 dec = n_to_dec(old_base, from_base);
                 if (* old_base == '-')
                         dec *= -1;
                 print_in_new_base(dec, to_base);
-                fprintf(stdout, 
+                fprintf(output, 
                         "Write a number in base %d to convert to base %d... ", 
                         from_base, to_base);
         }
@@ -83,21 +77,21 @@ void print_in_new_base(int dec, int to_base)
                 }
                 dec = dec / to_base;
         }
-        if (is_neg) fprintf(stdout, "-");
+        if (is_neg) fprintf(output, "-");
         print_backwards(to_print, i - 1);
 }
 
 void read_bases(int *to_base, int *from_base)
 {
-        fprintf(stdout, "Type \"quit\" at any point to exit.\n");
-        fprintf(stdout, "0 < base <= 62\n");
-        fprintf(stdout, "Notation: 0<1< ... <9<A<B< ... <Z<a<b< ... <z\n");
+        fprintf(output, "Type \"quit\" at any point to exit.\n");
+        fprintf(output, "0 < base <= 62\n");
+        fprintf(output, "Notation: 0<1< ... <9<A<B< ... <Z<a<b< ... <z\n");
 
-        fprintf(stdout, "Convert from base... ");
+        fprintf(output, "Convert from base... ");
         assert(fscanf(stdin, "%d", from_base) == 1);
         assert(* from_base > 0 && * from_base < 63);
 
-        fprintf(stdout, "to base... ");
+        fprintf(output, "to base... ");
         assert(fscanf(stdin, "%d", to_base) == 1);
         assert(* to_base > 0 && * to_base < 63);
 }
@@ -151,12 +145,11 @@ int n_to_dec(char *old_base, int from_base)
 
 void print_backwards(char *to_print, int len)
 {
-        FILE *out = stdout;
         int j;
         for (j = len; j >= 0 && to_print[j] != '\0'; j--) 
         {
-                fprintf(out, "%c", to_print[j]);
+                fprintf(output, "%c", to_print[j]);
         }
-        fprintf(out, "\n");
+        fprintf(output, "\n");
 }
 
