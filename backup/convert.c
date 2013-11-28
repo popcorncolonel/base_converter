@@ -1,10 +1,3 @@
-/*
- * MAIN FILE - Everything branches out from here 
- *
- * Written by Eric Bailey
- * Fall 2013
- *
- */
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -18,6 +11,7 @@
 
 /* TODO: 
  *       fix arbirarity of MAX and reading strings
+ *       reading strings, ignoring whitespace
  *       parsing these strings and using the +, -, etc. to do calcs
  *              commands to add: +*-/^!
  *

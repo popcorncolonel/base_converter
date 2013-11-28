@@ -1,2 +1,2 @@
 all: 
-	gcc -Wall -Wextra -o convert_base convert.c readline.c
+	gcc -Wall -Wextra -O2 -o convert_base *.c
