@@ -14,3 +14,8 @@ int n_to_dec(char *old_base_str, int from_base);
  * exits if "!q" or "!quit" is input 
  */
 int calculate_input(int base);
+
+/*
+ * Defines a syntax error with the bad string given. exits the program.
+ */
+void syntax_error(char *bad_string);

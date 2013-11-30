@@ -37,13 +37,10 @@ int main()
         int to_base, from_base;
         read_bases(&to_base, &from_base);
 
-        fprintf(output, "Write a number in base %d to convert to base %d... ",
-                from_base, to_base);
-
         while (1)
         {
                 print_in_new_base(calculate_input(from_base), to_base);
-                fprintf(output, "Write a number in base %d to convert \
+                fprintf(output, "Write a calculation in base %d to convert \
 to base %d... ", 
                                 from_base, to_base);
         }

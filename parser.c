@@ -4,6 +4,7 @@
 
 #include "readline.h"
 #include "parser.h"
+#include "calculator.h"
 
 #define MAX 1024
 
@@ -27,7 +28,7 @@ void read_bases(int *to_base, int *from_base)
 int calculate_input(int base)
 {
         int dec = 0;
-        int *num_strings = malloc(4);
+        int *num_strings = malloc(8);
         char **cmds = readline(num_strings);
 
         /* just converting one int from b1 -> b2 */
@@ -49,15 +50,12 @@ int calculate_input(int base)
         }
         else if (* num_strings > 1)
         {
-                fprintf(stderr, "sorry, working on doing a calculator now!\n");
-                fprintf(stderr, "here are your strings though: \n");
-                int i;
-                for (i = 0; i < * num_strings; i++) fprintf(stderr, "%s ", cmds[i]);
-                /* calc module has a stack maybe? or does THIS have a stack? */
-                /* incorporate the calculator module here */
+                fprintf(stderr, "%d\n", calculate(cmds, * num_strings, base));
         }
         int i;
-        for (i = 0; i < * num_strings; i++) free(cmds[i]);
+        for (i = 0; i < (* num_strings); i++) {
+                if (cmds[i] != NULL) free(cmds[i]);
+        }
         free(cmds);
         free(num_strings);
         return dec;
@@ -112,4 +110,9 @@ int n_to_dec(char *old_base_str, int from_base)
         return sum;
 }
 
+void syntax_error(char *bad_string)
+{
+        fprintf(stderr, "Syntax error found :\"%s\"\n", bad_string);
+        exit(1);
+}
 
