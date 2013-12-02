@@ -32,11 +32,10 @@ int calculate_input(int base)
         char **cmds = readline(num_strings);
 
         /* just converting one int from b1 -> b2 */
-        if (* num_strings == 1)
+        if (* num_strings == 3)
         {
-                char *old_base_str = cmds[0];
-                if (!(old_base_str != NULL &&
-                             old_base_str[0] != '!' && old_base_str[1] != 'q'))
+                if (cmds[1] && (cmds[1][0] == '!' && 
+                    cmds[2] &&  cmds[2][0] == 'q'))
                 {
                         int i;
                         for (i = 0; i < * num_strings; i++) free(cmds[i]);
@@ -44,13 +43,18 @@ int calculate_input(int base)
                         free(num_strings);
                         exit(0);
                 }
+        }
+        if (* num_strings == 1)
+        {
+                char *old_base_str = cmds[0];
+                assert(old_base_str != NULL);
                 dec = n_to_dec(old_base_str, base);
                 if (* old_base_str == '-')
                         dec *= -1;
         }
         else if (* num_strings > 1)
         {
-                fprintf(stderr, "%d\n", calculate(cmds, * num_strings, base));
+                return calculate(cmds, * num_strings, base);
         }
         int i;
         for (i = 0; i < (* num_strings); i++) {
@@ -112,7 +116,7 @@ int n_to_dec(char *old_base_str, int from_base)
 
 void syntax_error(char *bad_string)
 {
-        fprintf(stderr, "Syntax error found :\"%s\"\n", bad_string);
+        fprintf(stderr, "Syntax error found: \"%s\"\n", bad_string);
         exit(1);
 }
 

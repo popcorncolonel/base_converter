@@ -3,10 +3,11 @@
 #include <assert.h>
 
 #include "readline.h"
+#include "parser.h"
+#include "calculator.h"
 
 #define MAX 1024
 
-static inline int n_to_dec(char *old_base_str, int from_base);
 
 void read_bases(int *to_base, int *from_base)
 {
@@ -26,26 +27,41 @@ void read_bases(int *to_base, int *from_base)
 
 int calculate_input(int base)
 {
-        /*
-        int *num_strings = malloc(4);
+        int dec = 0;
+        int *num_strings = malloc(8);
         char **cmds = readline(num_strings);
+
+        /* just converting one int from b1 -> b2 */
+        if (* num_strings == 1)
+        {
+                char *old_base_str = cmds[0];
+                if (!(old_base_str != NULL &&
+                             old_base_str[0] != '!' && old_base_str[1] != 'q'))
+                {
+                        int i;
+                        for (i = 0; i < * num_strings; i++) free(cmds[i]);
+                        free(cmds);
+                        free(num_strings);
+                        exit(0);
+                }
+                dec = n_to_dec(old_base_str, base);
+                if (* old_base_str == '-')
+                        dec *= -1;
+        }
+        else if (* num_strings > 1)
+        {
+                fprintf(stderr, "%d\n", calculate(cmds, * num_strings, base));
+        }
         int i;
+        for (i = 0; i < (* num_strings); i++) {
+                if (cmds[i] != NULL) free(cmds[i]);
+        }
+        free(cmds);
         free(num_strings);
-        */
-        char old_base_str[MAX];
-        if (!(fscanf(stdin, "%s", old_base_str) == 1 && old_base_str != NULL &&
-               old_base_str[0] != '!' && old_base_str[1] != 'q'))
-                exit(0);
-        int dec = n_to_dec(old_base_str, base);
-        if (* old_base_str == '-')
-                dec *= -1;
-        /* ignore whitespace */
-        /* read in either just an int or calculations. n calcs per line. */
-        /* incorporate the calculator module here */
         return dec;
 }
 
-static inline int n_to_dec(char *old_base_str, int from_base)
+int n_to_dec(char *old_base_str, int from_base)
 {
         if (* old_base_str == '-') old_base_str = old_base_str + 1;
         int sum = 0, offset = 1;
@@ -94,4 +110,9 @@ static inline int n_to_dec(char *old_base_str, int from_base)
         return sum;
 }
 
+void syntax_error(char *bad_string)
+{
+        fprintf(stderr, "Syntax error found: \"%s\"\n", bad_string);
+        exit(1);
+}
 

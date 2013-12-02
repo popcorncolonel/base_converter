@@ -16,12 +16,15 @@ char **readline(int *amount)
         char temp_string[MAX];
         int i;
 
+        /* this checks for multiple spaces in lines */
+        int last_word_was_space = 0; 
+
         while (last_char != '\n' && 
-               last_char != '\0' && 
-               last_char != '\t')
+                        last_char != '\0' && 
+                        last_char != '\t')
         {
                 last_char = getc(stdin);
-                if (!isspace(last_char))
+                if (!isspace(last_char)) /* add to word */
                 {
                         if (chars_in_word >= MAX - 1)
                         {
@@ -29,20 +32,27 @@ char **readline(int *amount)
                                 exit(1);
                         }
                         temp_string[chars_in_word++] = last_char;
+                        last_word_was_space = 0;
                 }
-                else 
+                else  /* create word */
                 {
-                        if (num_strings + 1 > max_strings) 
-                                strings = resize_array(strings, &max_strings);
-                        strings[num_strings] = malloc(sizeof(char) *
-                                               chars_in_word);
-                        for (i = 0; i < chars_in_word; i++)
+                        if (!last_word_was_space)
                         {
-                                strings[num_strings][i] = temp_string[i];
-                                temp_string[i] = '\0';
+                                last_word_was_space = 1;
+                                if (num_strings + 1 > max_strings) 
+                                        strings = resize_array(strings, 
+                                                               &max_strings);
+                                strings[num_strings] = malloc(sizeof(char) *
+                                                (chars_in_word + 1));
+                                for (i = 0; i < chars_in_word; i++)
+                                {
+                                        strings[num_strings][i] = temp_string[i];
+                                        temp_string[i] = '\0';
+                                }
+                                strings[num_strings][i] = '\0';
+                                chars_in_word = 0;
+                                num_strings++;
                         }
-                        chars_in_word = 0;
-                        num_strings++;
                 }
         }
         * amount = num_strings;

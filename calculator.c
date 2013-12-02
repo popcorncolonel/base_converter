@@ -18,27 +18,23 @@ typedef struct operator {
 
 int num_ops = 0;
 
-
 /* TODO: parentheses, exponentiation */
+/* NOTE: '*' == '.' */
 /* orders an array of operators - precidence = '*' == '/' > '+' == '-' */
 //static inline operator *calculate_muls(operator *ops);
 static inline int num_valid_ops(operator *ops);
-static inline void remove_muls(operator *ops);
+static inline void singularize_ops(operator *ops);
 static inline int do_op(operator op);
 int calculate(char **cmds, int num_cmds, int base)
 {
-        /* should alternate between ints and ops */
-        /* starts and ends with an int */
-        /* ops are strings of length 1 */
-        /* just add everything to a stack? or what */
         char op= '\0';
         int num = 0;
         int i;
         num_ops = (num_cmds - 1) / 2;
-        operator *oplist = malloc(sizeof(operator) * num_ops);
+        /* size is 12 */
+        operator oplist[num_ops];
         for (i = 0; i < num_cmds; i++) {
-                /* if number is expected */
-                if (i % 2 == 0)
+                if (i % 2 == 0) /* is a number */
                 {
                         num = n_to_dec(cmds[i], base);
                         if (i != 0)        oplist[(i - 2) / 2].rhs = num;
@@ -52,16 +48,15 @@ int calculate(char **cmds, int num_cmds, int base)
                 }
         }
         /* getting it down to just one operation in PEMDAS order */
-        remove_muls(oplist);
-        /* remove_adds */
+        singularize_ops(oplist);
         for (i = 0; i < num_ops; i++)
         {
                 if (oplist[i].operator != '\0')
                 {
                         num = do_op(oplist[i]);
+                        break;
                 }
         }
-        //free(oplist); //why is this giving an error.
         return num;
 }
 
@@ -89,7 +84,7 @@ static inline void set_left_op(operator *ops, int i, int answer)
         }
 }
 
-static inline void remove_muls(operator *ops)
+static inline void singularize_ops(operator *ops)
 {
         int i;
         int answer = 0;
@@ -97,17 +92,35 @@ static inline void remove_muls(operator *ops)
         for (i = 0; i < num_ops; i++)
         {
                 op = &ops[i];
-                if (((* op).operator == '*' || (* op).operator == '/') && 
-                    num_valid_ops(ops) != 1) {
-                        answer = do_op(ops[i]);
-                        (* op).operator = '\0';
-                        set_right_op(ops, i, answer);
-                        set_left_op(ops, i, answer);
-                        remove_muls(ops);
-                        return;
+                if (num_valid_ops(ops) != 1) {
+                        if ((* op).operator == '*' || (* op).operator == '/' ||
+                            (* op).operator == '.') {
+                                answer = do_op(ops[i]);
+                                (* op).operator = '\0';
+                                set_right_op(ops, i, answer);
+                                set_left_op(ops, i, answer);
+                                singularize_ops(ops);
+                                return;
+                        }
+                }
+        }
+
+        for (i = 0; i < num_ops; i++)
+        {
+                op = &ops[i];
+                if (num_valid_ops(ops) != 1) {
+                        if ((* op).operator == '+' || (* op).operator == '-') {
+                                answer = do_op(ops[i]);
+                                (* op).operator = '\0';
+                                set_right_op(ops, i, answer);
+                                set_left_op(ops, i, answer);
+                                singularize_ops(ops);
+                                return;
+                        }
                 }
         }
 }
+
 static inline int num_valid_ops(operator *ops)
 {
         int i, total = 0;
@@ -127,6 +140,9 @@ static inline int do_op(operator op)
                         break;
                 case '-':
                         to_return = op.lhs - op.rhs;
+                        break;
+                case '.':
+                        to_return = op.lhs * op.rhs;
                         break;
                 case '*':
                         to_return = op.lhs * op.rhs;

@@ -10,5 +10,6 @@ Started November 2013
  parameters?
 -Work on command line interface. Just ./base 10 16 256 (should print 100)
         -Keep ./base functionality - if argc == 1
+-Allow "5+3*4" instead of "5 + 3 * 4"
 -Make it work with decimals
         -Learn how to do non-decimal decimals (lol). 14F.28CD3 -> base 10 = ?

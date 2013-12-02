@@ -31,22 +31,43 @@ FILE *output = NULL;
 void print_in_new_base(int dec, int to_base);
 void print_backwards(char *to_print, int len);
 
-int main()
+int main(int argc, char *argv[])
 {
         output = stdout;
         int to_base, from_base;
-        read_bases(&to_base, &from_base);
-
-        while (1)
+        if (argc > 5 && argc % 2 == 1)
         {
-                print_in_new_base(calculate_input(from_base), to_base);
-                fprintf(output, "Write a calculation in base %d to convert \
+                fprintf(stderr, "Bad arguments! Usage: ./convert_base ");
+                fprintf(stderr, "[<from_base> <to_base> <operation>]\n");
+                exit(1);
+        }
+        if (argc == 1)
+        {
+                read_bases(&to_base, &from_base);
+
+                while (1)
+                {
+                        print_in_new_base(calculate_input(from_base), to_base);
+                        fprintf(output, "Write a calculation in base %d to convert \
 to base %d... ", 
-                                from_base, to_base);
+                                        from_base, to_base);
+                }
+        }
+        else
+        {
+                from_base = atoi(argv[1]);
+                to_base = atoi(argv[2]);
+                int answer = 0;
+
+                if (argc == 3) answer = n_to_dec(argv[3], from_base);
+                if (argc > 3) {
+                        answer = calculate(&argv[3], argc - 3, from_base);
+                }
+
+                print_in_new_base(answer, to_base);
         }
         return 0;
 }
-
 void print_in_new_base(int dec, int to_base)
 {
         char to_print[MAX];
@@ -87,4 +108,5 @@ void print_backwards(char *to_print, int len)
         }
         fprintf(output, "\n");
 }
+
 

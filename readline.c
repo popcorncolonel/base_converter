@@ -17,15 +17,19 @@ char **readline(int *amount)
         int i;
 
         /* this checks for multiple spaces in lines */
-        int last_word_was_space = 0; 
+        int last_word_was_space = 0, last_char_was_num = 1; 
 
         while (last_char != '\n' && 
                         last_char != '\0' && 
                         last_char != '\t')
         {
                 last_char = getc(stdin);
-                if (!isspace(last_char))
-                {
+                if (!isspace(last_char)  && 
+                   (((isalnum(last_char) &&  last_char_was_num)  ||
+                    (!isalnum(last_char) && !last_char_was_num)) ||
+                    last_word_was_space))
+                { /* add to word */ 
+                        last_char_was_num = isalnum(last_char);
                         if (chars_in_word >= MAX - 1)
                         {
                                 fprintf(stderr, "input too long! :(\n");
@@ -34,28 +38,31 @@ char **readline(int *amount)
                         temp_string[chars_in_word++] = last_char;
                         last_word_was_space = 0;
                 }
-                else 
-                {
-                        if (!last_word_was_space)
-                        {
-                                last_word_was_space = 1;
+                else { /* create word */ 
+                        if (!last_word_was_space) {
+                                last_word_was_space = isspace(last_char);
+                                last_char_was_num = isalnum(last_char);
                                 if (num_strings + 1 > max_strings) 
-                                        strings = resize_array(strings, &max_strings);
+                                        strings = resize_array(strings, 
+                                                               &max_strings);
                                 strings[num_strings] = malloc(sizeof(char) *
-                                                chars_in_word);
+                                                (chars_in_word + 1));
                                 for (i = 0; i < chars_in_word; i++)
                                 {
-                                        strings[num_strings][i] = temp_string[i];
+                                        strings[num_strings][i] =temp_string[i];
                                         temp_string[i] = '\0';
                                 }
                                 strings[num_strings][i] = '\0';
                                 chars_in_word = 0;
+                                if (!isspace(last_char)) {
+                                        temp_string[chars_in_word++] = last_char;
+                                        last_char_was_num = isalnum(last_char);
+                                }
                                 num_strings++;
                         }
                 }
         }
         * amount = num_strings;
-        fprintf(stderr, "i just read a line :^)\n");
 
         return strings;
 }
